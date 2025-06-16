@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Integration Test for Hesai LiDAR Driver -->
+  
+  <!-- Test parameters -->
+  <param name="use_sim_time" value="false"/>
+  
+  <!-- Launch the driver with test configuration -->
+  <include file="$(find hesai_lidar_driver)/launch/hesai_cone_detection.launch">
+    <arg name="device_ip" value="127.0.0.1"/>  <!-- Use localhost for testing -->
+    <arg name="launch_rviz" value="false"/>    <!-- Don't launch RViz in tests -->
+    <arg name="publish_tf" value="true"/>
+  </include>
+  
+  <!-- Integration test node -->
+  <test test-name="hesai_integration_test" pkg="hesai_lidar_driver" type="test_hesai_integration" time-limit="60.0">
+    <!-- Test configuration parameters -->
+    <param name="test_duration" value="10.0"/>
+    <param name="expected_topics" value="/hesai_lidar/raw_cloud,/hesai_lidar/filtered_cloud,/hesai_lidar/cone_markers"/>
+    <param name="min_message_rate" value="5.0"/>  <!-- Minimum Hz for topics -->
+  </test>
+  
+</launch>

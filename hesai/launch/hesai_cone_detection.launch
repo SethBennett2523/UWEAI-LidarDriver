@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Hesai Pandar 40p LiDAR Driver Launch File -->
+  
+  <!-- Driver Parameters -->
+  <arg name="device_ip" default="192.168.1.201" doc="IP address of Hesai LiDAR sensor"/>
+  <arg name="data_port" default="2368" doc="UDP port for LiDAR data packets"/>
+  <arg name="position_port" default="8308" doc="UDP port for GPS/position packets"/>
+  <arg name="frame_id" default="hesai_lidar" doc="Frame ID for point cloud data"/>
+  <arg name="scan_time" default="0.1" doc="Time for one complete scan (seconds)"/>
+  
+  <!-- Processing Parameters -->
+  <arg name="enable_processing" default="true" doc="Enable point cloud processing"/>
+  <arg name="enable_cone_detection" default="true" doc="Enable cone detection"/>
+  
+  <!-- Visualization -->
+  <arg name="launch_rviz" default="true" doc="Launch RViz for visualization"/>
+  <arg name="rviz_config" default="$(find hesai_lidar_driver)/rviz/hesai_cone_detection.rviz"/>
+  
+  <!-- Transform Parameters -->
+  <arg name="publish_tf" default="true" doc="Publish static transform from base_link to lidar"/>
+  <arg name="lidar_x" default="0.0" doc="LiDAR X position relative to base_link"/>
+  <arg name="lidar_y" default="0.0" doc="LiDAR Y position relative to base_link"/>
+  <arg name="lidar_z" default="1.5" doc="LiDAR Z position relative to base_link"/>
+  <arg name="lidar_roll" default="0.0" doc="LiDAR roll orientation"/>
+  <arg name="lidar_pitch" default="0.0" doc="LiDAR pitch orientation"/>
+  <arg name="lidar_yaw" default="0.0" doc="LiDAR yaw orientation"/>
+
+  <!-- Static Transform Publisher -->
+  <group if="$(arg publish_tf)">
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_lidar"
+          args="$(arg lidar_x) $(arg lidar_y) $(arg lidar_z) 
+                $(arg lidar_yaw) $(arg lidar_pitch) $(arg lidar_roll) 
+                base_link $(arg frame_id)"/>
+  </group>
+
+  <!-- Hesai LiDAR Driver Node -->
+  <node pkg="hesai_lidar_driver" type="hesai_lidar_node" name="hesai_lidar_driver" output="screen">
+    <!-- Network Configuration -->
+    <param name="device_ip" value="$(arg device_ip)"/>
+    <param name="data_port" value="$(arg data_port)"/>
+    <param name="position_port" value="$(arg position_port)"/>
+    
+    <!-- Frame Configuration -->
+    <param name="frame_id" value="$(arg frame_id)"/>
+    <param name="scan_time" value="$(arg scan_time)"/>
+    
+    <!-- Point Cloud Processing -->
+    <param name="enable_processing" value="$(arg enable_processing)"/>
+    
+    <!-- Region of Interest (ROI) -->
+    <param name="min_x" value="-50.0"/>
+    <param name="max_x" value="50.0"/>
+    <param name="min_y" value="-50.0"/>
+    <param name="max_y" value="50.0"/>
+    <param name="min_z" value="-2.0"/>
+    <param name="max_z" value="5.0"/>
+    
+    <!-- Filtering Parameters -->
+    <param name="voxel_leaf_size" value="0.05"/>
+    <param name="sor_mean_k" value="50"/>
+    <param name="sor_std_dev_threshold" value="1.0"/>
+    
+    <!-- Ground Removal -->
+    <param name="enable_ground_removal" value="true"/>
+    <param name="ground_height_threshold" value="-1.5"/>
+    
+    <!-- Ring Filtering -->
+    <param name="enable_ring_filter" value="false"/>
+    <param name="min_ring" value="0"/>
+    <param name="max_ring" value="39"/>
+    
+    <!-- Intensity Filtering -->
+    <param name="enable_intensity_filter" value="true"/>
+    <param name="min_intensity" value="10.0"/>
+    
+    <!-- Cone Detection -->
+    <param name="enable_cone_detection" value="$(arg enable_cone_detection)"/>
+    
+    <!-- Clustering Parameters -->
+    <param name="cluster_tolerance" value="0.3"/>
+    <param name="min_cluster_size" value="10"/>
+    <param name="max_cluster_size" value="500"/>
+    
+    <!-- Cone Geometry Constraints -->
+    <param name="min_cone_height" value="0.2"/>
+    <param name="max_cone_height" value="0.6"/>
+    <param name="min_cone_radius" value="0.05"/>
+    <param name="max_cone_radius" value="0.25"/>
+    <param name="max_cone_aspect_ratio" value="3.0"/>
+    
+    <!-- Detection Thresholds -->
+    <param name="min_detection_confidence" value="0.5"/>
+    <param name="max_detection_distance" value="30.0"/>
+    
+    <!-- Analysis Options -->
+    <param name="enable_height_analysis" value="true"/>
+    <param name="enable_shape_analysis" value="true"/>
+    <param name="shape_analysis_tolerance" value="0.1"/>
+  </node>
+
+  <!-- RViz Visualization -->
+  <group if="$(arg launch_rviz)">
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config)" output="screen"/>
+  </group>
+
+</launch>

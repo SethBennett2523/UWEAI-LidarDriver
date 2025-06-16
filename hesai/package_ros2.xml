@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>hesai_lidar_driver</name>
+  <version>1.0.0</version>
+  <description>Hesai Pandar 40p LiDAR driver for cone detection on autonomous vehicles</description>
+
+  <maintainer email="seth@example.com">Seth</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Core ROS2 dependencies -->
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  
+  <!-- PCL and visualization -->
+  <depend>pcl_ros</depend>
+  <depend>pcl_conversions</depend>
+  <depend>visualization_msgs</depend>
+  
+  <!-- Network and threading -->
+  <depend>boost</depend>
+  
+  <!-- Testing dependencies -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
